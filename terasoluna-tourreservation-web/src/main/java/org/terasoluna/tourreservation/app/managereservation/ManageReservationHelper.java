@@ -16,6 +16,7 @@
 package org.terasoluna.tourreservation.app.managereservation;
 
 import org.dozer.Mapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import org.terasoluna.gfw.common.codelist.i18n.I18nCodeList;
@@ -61,6 +62,9 @@ public class ManageReservationHelper {
 
     @Inject
     Mapper dozerBeanMapper;
+
+    @Value("${output.pdf.name}")
+    String outputPdfName;
 
     protected String convertNightDays(int days, Locale locale) {
         if (days == 1) {
@@ -248,6 +252,9 @@ public class ManageReservationHelper {
 
         // set print date
         downloadPDFOutput.setPrintDay(dateFactory.newDate());
+
+        // set pdf name
+        downloadPDFOutput.setPdfName(outputPdfName);
 
         return downloadPDFOutput;
     }
