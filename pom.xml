@@ -282,16 +282,6 @@
         <version>${webdrivermanager.version}</version>
       </dependency>
       <!-- == End Test == -->
-      <!-- == Begin Lombok == -->
-      <!-- Workaround to Lombok bug(see https://github.com/terasolunaorg/terasoluna-tourreservation/issues/585).
-           We will remove the version definition with the following ISSUE.
-           https://github.com/terasolunaorg/terasoluna-tourreservation/issues/588 -->
-      <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>${lombok.version}</version>
-      </dependency>
-      <!-- == End Lombok == -->
     </dependencies>
   </dependencyManagement>
   <properties>
