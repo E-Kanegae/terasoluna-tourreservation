@@ -15,6 +15,9 @@
  */
 package org.terasoluna.tourreservation.tourreserve.common;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -27,19 +30,15 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.support.events.EventFiringWebDriver;
-import org.openqa.selenium.support.events.WebDriverEventListener;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
-import io.github.bonigarcia.wdm.FirefoxDriverManager;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class FunctionTestSupport extends ApplicationObjectSupport {
@@ -47,26 +46,23 @@ public abstract class FunctionTestSupport extends ApplicationObjectSupport {
     @Inject
     protected MessageSource messageSource;
 
-    @Inject
-    protected WebDriverEventListener waitWebDriverEventListener;
-
     @Value("${selenium.applicationContextUrl}")
     protected String applicationContextUrl;
 
     @Value("${selenium.locale:en}")
     protected Locale locale;
 
-    @Value("${selenium.geckodriverVersion}")
-    protected String geckodriverVersion;
+    @Value("${wdm.geckoDriverVersion}")
+    protected String geckoDriverVersion;
 
-    @Value("${selenium.proxyHttpServer}")
-    protected String proxyHttpServer;
+    @Value("${wdm.proxy}")
+    protected String proxy;
 
-    @Value("${selenium.proxyUserName}")
-    protected String proxyUserName;
+    @Value("${wdm.proxyUser}")
+    protected String proxyUser;
 
-    @Value("${selenium.proxyUserPassword}")
-    protected String proxyUserPassword;
+    @Value("${wdm.proxyPass}")
+    protected String proxyPass;
 
     /**
      * Starts a WebDriver<br>
@@ -77,10 +73,13 @@ public abstract class FunctionTestSupport extends ApplicationObjectSupport {
         WebDriver driver = null;
 
         // Setting up geckodriver
-        if (System.getProperty("webdriver.gecko.driver") == null) {
-            FirefoxDriverManager.getInstance().version(geckodriverVersion)
-                    .forceCache().proxy(proxyHttpServer).proxyUser(
-                            proxyUserName).proxyPass(proxyUserPassword).setup();
+        if (System.getenv("webdriver.gecko.driver") == null) {
+            WebDriverManager.firefoxdriver().version(geckoDriverVersion)
+                    .forceCache().proxy(proxy).proxyUser(proxyUser).proxyPass(
+                            proxyPass).setup();
+        } else {
+            System.setProperty("webdriver.gecko.driver", System.getenv(
+                    "webdriver.gecko.driver"));
         }
 
         for (String activeProfile : getApplicationContext().getEnvironment()
@@ -101,19 +100,15 @@ public abstract class FunctionTestSupport extends ApplicationObjectSupport {
             profile.setPreference("brouser.startup.homepage_override.mstone",
                     "ignore");
             profile.setPreference("network.proxy.type", 0);
-            profile.setPreference("layout.css.devPixelsPerPx", "0.5");
 
-            driver = new FirefoxDriver(profile);
+            FirefoxOptions options = new FirefoxOptions().setProfile(profile);
+            driver = new FirefoxDriver(options);
         }
 
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
         driver.get(applicationContextUrl + "?locale=" + locale.getLanguage());
 
-        // Register WebDriverEventListener in the webDriver
-        EventFiringWebDriver webDriver = new EventFiringWebDriver(driver);
-        webDriver.register(waitWebDriverEventListener);
-
-        return webDriver;
+        return driver;
     }
 
     /**

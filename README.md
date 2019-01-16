@@ -77,10 +77,10 @@ $ mvn -f terasoluna-tourreservation-selenium/pom.xml clean test
 > **Note:**
 >
 > If GeckoDriver is not registered in the path, [webdrivermanager](https://github.com/bonigarcia/webdrivermanager) will download it automatically.  
-> If required proxy, please set `selenium.proxyHttpServer`.  
-> If required proxy authentication, set   `selenium.proxyUserName`, `selenium.proxyUserPassword`.  
+> If required proxy, please set `wdm.proxy`.  
+> If required proxy authentication, set   `wdm.proxyUser`, `wdm.proxyPass`.  
 > ```console
-> $ mvn -f terasoluna-tourreservation-selenium/pom.xml clean test -Dselenium.proxyHttpServer={HttpServer} -Dselenium.proxyUserName={UserName} -Dselenium.proxyUserPassword={Password}
+> $ mvn -f terasoluna-tourreservation-selenium/pom.xml clean test -Dwdm.proxy={HttpServer} -Dwdm.proxyUser={UserName} -Dwdm.proxyPass={Password}
 > ```  
  > **Note:**
-> You can change GeckoDriver's version with setting `selenium.geckodriverVersion`.
+> You can change GeckoDriver's version with setting `wdm.geckoDriverVersion`.
